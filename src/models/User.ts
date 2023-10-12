@@ -6,7 +6,14 @@ export default class User {
   constructor(private socket: Socket, private io: Server) {
     this.socket = socket;
     this.io = io;
-    this.connect();
+    this.listen();
+  }
+
+  // user connects
+  private listen() {
+    console.log(`Client ${this.socket.id} joined!`);
+
+    this.socket.to(this.socket.id).emit("TEST", "this is a test message");
   }
 
   // user joins

@@ -52,7 +52,7 @@ class App {
     );
 
     // client connects
-    this.io.on(EEventStrings.clientConnects, (socket: socketIO.Socket) => {
+    this.io.on(EEventStrings.connect, (socket: socketIO.Socket) => {
       new User(socket, this.io);
     });
   }
