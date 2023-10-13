@@ -26,5 +26,18 @@ export default class User {
           `This is ${this.socket.id}'s message: ${msg} right back at your`
         );
     });
+
+    // this.socket.on("textChange", (delta: string) => {
+    //   console.log({ delta });
+    //   // broadcast to all but the sender
+    //   // this.socket.broadcast.emit("textChange", delta);
+    // });
+
+    this.socket.on("textChange", (delta: string) => {
+      console.log(`${this.socket.id} says ${delta}`);
+
+      // this.io.to(this.socket.id).emit("textChange", delta);
+      this.socket.broadcast.emit("textChange", delta);
+    });
   }
 }

@@ -1,15 +1,22 @@
 import http from "http";
 import express, { Application } from "express";
 import cors from "cors";
-import socketIO from "socket.io";
+import { Server, Socket } from "socket.io";
 import { EEventStrings } from "./types/enums";
 import User from "./models/User";
+
+import {
+  IServerToClientEvents,
+  IClientToServerEvents,
+  IInterServerEvents,
+  ISocketData,
+} from "./types/interfaces";
 
 class App {
   private static readonly PORT: number = 5000;
   private port: number | string;
   private server: http.Server;
-  private io: socketIO.Server;
+  private io: Server;
   private app: Application;
 
   constructor() {
@@ -40,7 +47,12 @@ class App {
   // create socket server
   // set cors
   private sockets() {
-    return new socketIO.Server(this.server, {
+    return new Server<
+      IServerToClientEvents,
+      IClientToServerEvents,
+      IInterServerEvents,
+      ISocketData
+    >(this.server, {
       cors: { origin: "*" },
     });
   }
@@ -52,7 +64,7 @@ class App {
     );
 
     // client connects
-    this.io.on(EEventStrings.connect, (socket: socketIO.Socket) => {
+    this.io.on(EEventStrings.connect, (socket: Socket) => {
       new User(socket, this.io);
     });
   }
