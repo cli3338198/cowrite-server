@@ -1,5 +1,7 @@
 // event strings
-export enum EEventStrings {
+export enum EventStrings {
   connect = "connect",
   disconnect = "disconnect",
+  getUsers = "getUsers",
+  textChange = "textChange",
 }

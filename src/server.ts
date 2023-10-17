@@ -2,14 +2,13 @@ import http from "http";
 import express, { Application } from "express";
 import cors from "cors";
 import { Server, Socket } from "socket.io";
-import { EEventStrings } from "./types/enums";
+import { EventStrings } from "./types/enums";
 import User from "./models/User";
-
 import {
-  IServerToClientEvents,
-  IClientToServerEvents,
-  IInterServerEvents,
-  ISocketData,
+  ServerToClientEvents,
+  ClientToServerEvents,
+  InterServerEvents,
+  SocketData,
 } from "./types/interfaces";
 
 class App {
@@ -48,10 +47,10 @@ class App {
   // set cors
   private sockets() {
     return new Server<
-      IServerToClientEvents,
-      IClientToServerEvents,
-      IInterServerEvents,
-      ISocketData
+      ServerToClientEvents,
+      ClientToServerEvents,
+      InterServerEvents,
+      SocketData
     >(this.server, {
       cors: { origin: "*" },
     });
@@ -64,7 +63,7 @@ class App {
     );
 
     // client connects
-    this.io.on(EEventStrings.connect, (socket: Socket) => {
+    this.io.on(EventStrings.connect, (socket: Socket) => {
       new User(socket, this.io);
     });
   }
