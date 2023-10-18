@@ -12,11 +12,12 @@ import {
 } from "./types/interfaces";
 
 class App {
-  private static readonly PORT: number = 5000;
+  private static readonly PORT: number = +process.env.PORT! || 5000;
   private port: number | string;
   private server: http.Server;
   private io: Server;
   private app: Application;
+  private users: User[];
 
   constructor() {
     this.port = this.config();
@@ -24,6 +25,7 @@ class App {
     this.io = this.sockets();
     this.app = this.createApp();
     this.listen();
+    this.users = [];
   }
 
   // create app
@@ -56,7 +58,7 @@ class App {
     });
   }
 
-  // start servers
+  // start server
   private listen() {
     this.server.listen(this.port, () =>
       console.log(`Listening on PORT ${this.port}`)
@@ -64,8 +66,24 @@ class App {
 
     // client connects
     this.io.on(EventStrings.connect, (socket: Socket) => {
-      new User(socket, this.io);
+      this.users = [...this.users, new User(socket, this.io, this.users)];
+
+      console.log(
+        "connect",
+        this.users.map((user) => user.id)
+      );
     });
+
+    // client disconnects
+    // this.io.on(EventStrings.disconnect, (socket: Socket) => {
+    //   console.log(socket.id);
+    //   // TODO:
+    //   this.users = this.users.filter((user: User) => user.id !== socket.id);
+    //   console.log(
+    //     "close",
+    //     this.users.map((user) => user.id)
+    //   );
+    // });
   }
 }
 
