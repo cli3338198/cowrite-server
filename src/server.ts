@@ -17,7 +17,6 @@ class App {
   private server: http.Server;
   private io: Server;
   private app: Application;
-  private users: User[];
 
   constructor() {
     this.port = this.config();
@@ -25,8 +24,9 @@ class App {
     this.io = this.sockets();
     this.app = this.createApp();
     this.listen();
-    this.users = [];
   }
+
+  // ***************************************************************************
 
   // create app
   private createApp() {
@@ -37,16 +37,15 @@ class App {
 
   // set port
   private config() {
-    return process.env.PORT || App.PORT;
+    return App.PORT;
   }
 
-  // create http server
+  // create server
   private createServer() {
     return new http.Server();
   }
 
-  // create socket server
-  // set cors
+  // create socket
   private sockets() {
     return new Server<
       ServerToClientEvents,
@@ -58,7 +57,9 @@ class App {
     });
   }
 
-  // start server
+  // ***************************************************************************
+
+  // listen
   private listen() {
     this.server.listen(this.port, () =>
       console.log(`Listening on PORT ${this.port}`)
@@ -66,24 +67,15 @@ class App {
 
     // client connects
     this.io.on(EventStrings.connect, (socket: Socket) => {
-      this.users = [...this.users, new User(socket, this.io, this.users)];
+      new User(socket, this.io);
 
-      console.log(
-        "connect",
-        this.users.map((user) => user.id)
+      this.io.fetchSockets().then((d) =>
+        console.log(
+          d.map((d) => d.id),
+          "<--- on connect"
+        )
       );
     });
-
-    // client disconnects
-    // this.io.on(EventStrings.disconnect, (socket: Socket) => {
-    //   console.log(socket.id);
-    //   // TODO:
-    //   this.users = this.users.filter((user: User) => user.id !== socket.id);
-    //   console.log(
-    //     "close",
-    //     this.users.map((user) => user.id)
-    //   );
-    // });
   }
 }
 
